@@ -15,7 +15,7 @@ jobs:
   codeql:
     name: Run codeql scan
     if: github.event.pull_request.draft == false
-    uses: Informasjonsforvaltning/workflows/.github/workflows/codeql.yaml@chore/hos/codeql-actions
+    uses: Informasjonsforvaltning/workflows/.github/workflows/codeql.yaml@main
     with:
       language: java
       java_version: '17'
