@@ -1,4 +1,6 @@
 name: Deploy to staging
+permissions:
+  contents: read
 
 on:
   pull_request:
@@ -9,6 +11,9 @@ on:
 jobs:
   dependabot-build:
     name: Build image on PR from dependabot
+    permissions:
+      contents: read
+      pull-requests: write
     if: ${{ github.actor == 'dependabot[bot]' && github.event_name == 'pull_request' }}
     uses: Informasjonsforvaltning/workflows/.github/workflows/build.yaml@main
     with:
