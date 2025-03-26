@@ -104,7 +104,7 @@ class CommentController (private val commentService: CommentService) {
             else -> {
                 logger.info("deleing comment ${commentId}")
                 commentService.deleteComment(commentDBO)
-                ResponseEntity(commentId, HttpStatus.OK)
+                ResponseEntity(HttpStatus.OK)
             }
         }
     }

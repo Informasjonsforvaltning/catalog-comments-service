@@ -206,9 +206,6 @@ class CommentIntegration : ApiTestContext() {
 
         assertEquals(HttpStatus.OK.value(), rsp["status"])
 
-        val deletedComment = rsp["body"] as String
-        assertEquals(deletedComment, COMMENT_TO_BE_DELETED.id)
-
         val after = authorizedRequest(
             "/$ORG_NUMBER/$TOPIC_ID/comment", port, "",
             JwtToken(Access.ORG_READ).toString(), HttpMethod.GET
