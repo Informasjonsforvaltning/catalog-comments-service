@@ -1,4 +1,4 @@
-# Data Service Catalog
+# Catalog Comments Service
 
 This application provides an API for the management of comments to datasets, dataservices, concepts and services.
 
