@@ -8,18 +8,37 @@ server:
   port: 8080
 application.cors.originPatterns: "${CORS_ORIGIN_PATTERNS}"
 spring:
-  data.mongodb.uri: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST:mongodb}:${MONGO_PORT:27017}/comments?authSource=admin&authMechanism=SCRAM-SHA-1
+  data.mongodb:
+    host: ${MONGODB_HOST}
+    username: ${MONGODB_USER}
+    password: ${MONGODB_PASSWORD}
+    authentication-database: ${MONGODB_AUTH}
+    replica-set-name: ${MONGODB_REPLICASET}
+    port: 27017
+    database: catalogComments
+    auto-index-creation: true
   security.oauth2.resourceserver.jwt:
     jwk-set-uri: ${OIDC_JWKS:https://sso.staging.fellesdatakatalog.digdir.no/auth/realms/fdk/protocol/openid-connect/certs}
     issuer-uri: ${OIDC_ISSUER:https://sso.staging.fellesdatakatalog.digdir.no/auth/realms/fdk}
 ---
 spring:
   config.activate.on-profile: develop
-  data.mongodb.uri: mongodb://admin:admin@localhost:27017/comments?authSource=admin&authMechanism=SCRAM-SHA-1
+  data.mongodb:
+    host: localhost
+    username: admin
+    password: admin
+    authentication-database: admin
+    replica-set-name: null
   security.oauth2.resourceserver.jwt.jwk-set-uri: https://sso.staging.fellesdatakatalog.digdir.no/auth/realms/fdk/protocol/openid-connect/certs
 application.cors.originPatterns: "*"
 ---
 spring:
   config.activate.on-profile: integration-test
+  data.mongodb:
+    host: localhost
+    username: testuser
+    password: testpassword
+    authentication-database: admin
+    replica-set-name: null
   security.oauth2.resourceserver.jwt.jwk-set-uri: http://localhost:5050/auth/realms/fdk/protocol/openid-connect/certs
 application.cors.originPatterns: "*"

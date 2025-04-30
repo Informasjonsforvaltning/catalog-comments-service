@@ -102,12 +102,12 @@ fun populate() {
     val client: MongoClient = MongoClients.create(connectionString)
     val mongoDatabase = client.getDatabase(MONGO_DB_NAME).withCodecRegistry(pojoCodecRegistry)
 
-    val commentCollection = mongoDatabase.getCollection("comment")
+    val commentCollection = mongoDatabase.getCollection("comments")
     commentCollection.deleteMany(org.bson.Document())
     commentCollection.insertMany(commentDbPopulation())
     commentCollection.insertMany(commentWrongUserDbPopulation())
 
-    val userCollection = mongoDatabase.getCollection("user")
+    val userCollection = mongoDatabase.getCollection("users")
     userCollection.deleteMany(org.bson.Document())
     userCollection.insertMany(userDbPopulation())
 
