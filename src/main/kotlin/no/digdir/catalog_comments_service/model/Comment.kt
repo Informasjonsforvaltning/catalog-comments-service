@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document
 import java.time.LocalDateTime
 import java.util.*
 
-@Document(collection = "comment")
+@Document(collection = "comments")
 data class CommentDBO(
     @Id
     val id:String,
