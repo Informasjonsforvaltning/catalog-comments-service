@@ -5,5 +5,3 @@ namespace: demo
 resources:
   - ../base
 
-patches:
-  - path: env.yaml

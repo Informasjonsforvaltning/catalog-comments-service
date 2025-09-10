@@ -19,6 +19,47 @@ spec:
     spec:
       containers:
         - name: catalog-comments-service
+          env:
+            - name: MONGODB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: catalog-comments-service
+                  key: MONGODB_USER
+            - name: MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: catalog-comments-service
+                  key: MONGODB_PASSWORD
+            - name: MONGODB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb
+                  key: MONGODB_HOST
+            - name: MONGODB_REPLICASET
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb
+                  key: MONGODB_REPLICASET
+            - name: MONGODB_AUTH
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb
+                  key: MONGODB_AUTH
+            - name: OIDC_JWKS
+              valueFrom:
+                secretKeyRef:
+                  name: sso
+                  key: SSO_OIDC_JWKS
+            - name: OIDC_ISSUER
+              valueFrom:
+                secretKeyRef:
+                  name: sso
+                  key: SSO_OIDC_ISSUER
+            - name: CORS_ORIGIN_PATTERNS
+              valueFrom:
+                secretKeyRef:
+                  name: catalog-comments-service
+                  key: CORS_ORIGIN_PATTERNS
           image: catalog-comments-service
           imagePullPolicy: Always
           ports:
