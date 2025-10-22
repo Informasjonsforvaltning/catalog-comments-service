@@ -18,8 +18,8 @@ spring:
     database: catalogComments
     auto-index-creation: true
   security.oauth2.resourceserver.jwt:
-    jwk-set-uri: ${OIDC_JWKS:https://sso.staging.fellesdatakatalog.digdir.no/auth/realms/fdk/protocol/openid-connect/certs}
-    issuer-uri: ${OIDC_ISSUER:https://sso.staging.fellesdatakatalog.digdir.no/auth/realms/fdk}
+    jwk-set-uri: ${OIDC_JWKS:https://keycloak.staging.fellesdatakatalog.digdir.no/realms/fdk/protocol/openid-connect/certs}
+    issuer-uri: ${OIDC_ISSUER:https://keycloak.staging.fellesdatakatalog.digdir.no/realms/fdk}
 ---
 spring:
   config.activate.on-profile: develop
@@ -29,7 +29,7 @@ spring:
     password: admin
     authentication-database: admin
     replica-set-name: null
-  security.oauth2.resourceserver.jwt.jwk-set-uri: https://sso.staging.fellesdatakatalog.digdir.no/auth/realms/fdk/protocol/openid-connect/certs
+  security.oauth2.resourceserver.jwt.jwk-set-uri: https://keycloak.staging.fellesdatakatalog.digdir.no/realms/fdk/protocol/openid-connect/certs
 application.cors.originPatterns: "*"
 ---
 spring:
