@@ -77,7 +77,7 @@ fun authorizedRequest(
 
     } catch (e: HttpClientErrorException) {
         mapOf(
-            "status" to e.rawStatusCode,
+            "status" to e.statusCode.value(),
             "header" to " ",
             "body" to e.toString()
         )
