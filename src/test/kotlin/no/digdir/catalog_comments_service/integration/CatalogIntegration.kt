@@ -73,7 +73,7 @@ class CatalogIntegration : ApiTestContext() {
         val response = deserializePaginatedResponse<Comment>(rsp["body"] as String)
         assertTrue(response.items.isNotEmpty(), "Should return comments for the organization")
         assertTrue(response.pagination.totalPages > 0)
-        assertEquals(1, response.pagination.page)
+        assertEquals(0, response.pagination.page)
         assertEquals(10, response.pagination.size)
     }
 
@@ -104,14 +104,14 @@ class CatalogIntegration : ApiTestContext() {
     @Test
     fun `Ok - Custom page and size returns correct number of items`() {
         val rsp = authorizedRequest(
-            "/$ORG_NUMBER?page=1&size=2", port, "",
+            "/$ORG_NUMBER?page=0&size=2", port, "",
             JwtToken(Access.ORG_READ).toString(), HttpMethod.GET
         )
         assertEquals(HttpStatus.OK.value(), rsp["status"])
 
         val response = deserializePaginatedResponse<Comment>(rsp["body"] as String)
         assertEquals(2, response.items.size)
-        assertEquals(1, response.pagination.page)
+        assertEquals(0, response.pagination.page)
         assertEquals(2, response.pagination.size)
     }
 
@@ -168,32 +168,32 @@ class CatalogIntegration : ApiTestContext() {
         assertEquals(HttpStatus.OK.value(), rsp["status"])
 
         val response = deserializePaginatedResponse<Comment>(rsp["body"] as String)
-        assertEquals(1, response.pagination.page)
+        assertEquals(0, response.pagination.page)
         assertEquals(10, response.pagination.size)
     }
 
     @Test
-    fun `Ok - Page 2 returns different items than page 1`() {
+    fun `Ok - Page 1 returns different items than page 0`() {
+        val rsp0 = authorizedRequest(
+            "/$ORG_NUMBER?page=0&size=2", port, "",
+            JwtToken(Access.ORG_READ).toString(), HttpMethod.GET
+        )
         val rsp1 = authorizedRequest(
             "/$ORG_NUMBER?page=1&size=2", port, "",
             JwtToken(Access.ORG_READ).toString(), HttpMethod.GET
         )
-        val rsp2 = authorizedRequest(
-            "/$ORG_NUMBER?page=2&size=2", port, "",
-            JwtToken(Access.ORG_READ).toString(), HttpMethod.GET
-        )
+        assertEquals(HttpStatus.OK.value(), rsp0["status"])
         assertEquals(HttpStatus.OK.value(), rsp1["status"])
-        assertEquals(HttpStatus.OK.value(), rsp2["status"])
 
+        val page0 = deserializePaginatedResponse<Comment>(rsp0["body"] as String)
         val page1 = deserializePaginatedResponse<Comment>(rsp1["body"] as String)
-        val page2 = deserializePaginatedResponse<Comment>(rsp2["body"] as String)
 
+        assertTrue(page0.items.isNotEmpty(), "Page 0 should have items")
         assertTrue(page1.items.isNotEmpty(), "Page 1 should have items")
-        assertTrue(page2.items.isNotEmpty(), "Page 2 should have items")
 
+        val page0Ids = page0.items.map { it.id }.toSet()
         val page1Ids = page1.items.map { it.id }.toSet()
-        val page2Ids = page2.items.map { it.id }.toSet()
-        assertTrue(page1Ids.intersect(page2Ids).isEmpty(), "Page 1 and page 2 should have no overlapping IDs")
+        assertTrue(page0Ids.intersect(page1Ids).isEmpty(), "Page 0 and page 1 should have no overlapping IDs")
     }
 
     @Test
@@ -229,7 +229,7 @@ class CatalogIntegration : ApiTestContext() {
     }
 
     @Test
-    fun `Ok - Negative page is clamped to 1`() {
+    fun `Ok - Negative page is clamped to 0`() {
         val rsp = authorizedRequest(
             "/$ORG_NUMBER?page=-1", port, "",
             JwtToken(Access.ORG_READ).toString(), HttpMethod.GET
@@ -237,7 +237,7 @@ class CatalogIntegration : ApiTestContext() {
         assertEquals(HttpStatus.OK.value(), rsp["status"])
 
         val response = deserializePaginatedResponse<Comment>(rsp["body"] as String)
-        assertEquals(1, response.pagination.page)
+        assertEquals(0, response.pagination.page)
     }
 
     @Test

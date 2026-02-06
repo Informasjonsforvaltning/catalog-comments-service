@@ -57,16 +57,16 @@ class CommentService: ApiTestContext() {
         whenever(commentMongoRepository.countByOrgNumber("246813579"))
             .thenReturn(5L)
 
-        val result = commentService.getCommentsByOrgNumberPaginated("246813579", 1, 10, "datetime", "desc")
+        val result = commentService.getCommentsByOrgNumberPaginated("246813579", 0, 10, "datetime", "desc")
 
         assertEquals(5, result.items.size)
-        assertEquals(1, result.pagination.page)
+        assertEquals(0, result.pagination.page)
         assertEquals(10, result.pagination.size)
         assertEquals(1, result.pagination.totalPages)
     }
 
     @Test
-    fun `Paginated - page below min is clamped to 1`() {
+    fun `Paginated - page below min is clamped to 0`() {
         whenever(commentMongoRepository.findPaginated(eq("246813579"), eq(0L), eq(10), eq("createdDate"), eq(Sort.Direction.DESC)))
             .thenReturn(emptyList())
         whenever(commentMongoRepository.countByOrgNumber("246813579"))
@@ -74,7 +74,7 @@ class CommentService: ApiTestContext() {
 
         val result = commentService.getCommentsByOrgNumberPaginated("246813579", -5, 10, "datetime", "desc")
 
-        assertEquals(1, result.pagination.page)
+        assertEquals(0, result.pagination.page)
     }
 
     @Test
@@ -100,7 +100,7 @@ class CommentService: ApiTestContext() {
         whenever(commentMongoRepository.countByOrgNumber("246813579"))
             .thenReturn(0L)
 
-        val result = commentService.getCommentsByOrgNumberPaginated("246813579", 1, 0, "datetime", "desc")
+        val result = commentService.getCommentsByOrgNumberPaginated("246813579", 0, 0, "datetime", "desc")
 
         assertEquals(1, result.pagination.size)
     }
@@ -112,7 +112,7 @@ class CommentService: ApiTestContext() {
         whenever(commentMongoRepository.countByOrgNumber("246813579"))
             .thenReturn(0L)
 
-        val result = commentService.getCommentsByOrgNumberPaginated("246813579", 1, 10, "unknownField", "desc")
+        val result = commentService.getCommentsByOrgNumberPaginated("246813579", 0, 10, "unknownField", "desc")
 
         assertEquals(0, result.pagination.totalPages)
     }
@@ -125,7 +125,7 @@ class CommentService: ApiTestContext() {
         whenever(commentMongoRepository.countByOrgNumber("246813579"))
             .thenReturn(25L)
 
-        val result = commentService.getCommentsByOrgNumberPaginated("246813579", 1, 10, "datetime", "desc")
+        val result = commentService.getCommentsByOrgNumberPaginated("246813579", 0, 10, "datetime", "desc")
 
         assertEquals(3, result.pagination.totalPages)
     }
@@ -137,7 +137,7 @@ class CommentService: ApiTestContext() {
         whenever(commentMongoRepository.countByOrgNumber("246813579"))
             .thenReturn(0L)
 
-        val result = commentService.getCommentsByOrgNumberPaginated("246813579", 1, 10, "datetime", "desc")
+        val result = commentService.getCommentsByOrgNumberPaginated("246813579", 0, 10, "datetime", "desc")
 
         assertTrue(result.items.isEmpty())
         assertEquals(0, result.pagination.totalPages)
@@ -150,14 +150,14 @@ class CommentService: ApiTestContext() {
         whenever(commentMongoRepository.countByOrgNumber("246813579"))
             .thenReturn(0L)
 
-        val result = commentService.getCommentsByOrgNumberPaginated("246813579", 1, 10, "datetime", "asc")
+        val result = commentService.getCommentsByOrgNumberPaginated("246813579", 0, 10, "datetime", "asc")
 
         assertTrue(result.items.isEmpty())
     }
 
     @Test
     fun `Paginated - page at max boundary 10000 is accepted`() {
-        whenever(commentMongoRepository.findPaginated(eq("246813579"), eq(99990L), eq(10), eq("createdDate"), eq(Sort.Direction.DESC)))
+        whenever(commentMongoRepository.findPaginated(eq("246813579"), eq(100000L), eq(10), eq("createdDate"), eq(Sort.Direction.DESC)))
             .thenReturn(emptyList())
         whenever(commentMongoRepository.countByOrgNumber("246813579"))
             .thenReturn(0L)
@@ -174,7 +174,7 @@ class CommentService: ApiTestContext() {
         whenever(commentMongoRepository.countByOrgNumber("246813579"))
             .thenReturn(0L)
 
-        val result = commentService.getCommentsByOrgNumberPaginated("246813579", 1, 100, "datetime", "desc")
+        val result = commentService.getCommentsByOrgNumberPaginated("246813579", 0, 100, "datetime", "desc")
 
         assertEquals(100, result.pagination.size)
     }
@@ -187,7 +187,7 @@ class CommentService: ApiTestContext() {
         whenever(commentMongoRepository.countByOrgNumber("246813579"))
             .thenReturn(6L)
 
-        val result = commentService.getCommentsByOrgNumberPaginated("246813579", 1, 3, "datetime", "desc")
+        val result = commentService.getCommentsByOrgNumberPaginated("246813579", 0, 3, "datetime", "desc")
 
         assertEquals(2, result.pagination.totalPages)
     }
@@ -199,7 +199,7 @@ class CommentService: ApiTestContext() {
         whenever(commentMongoRepository.countByOrgNumber("246813579"))
             .thenReturn(0L)
 
-        val result = commentService.getCommentsByOrgNumberPaginated("246813579", 1, 10, "lastChangedDate", "desc")
+        val result = commentService.getCommentsByOrgNumberPaginated("246813579", 0, 10, "lastChangedDate", "desc")
 
         assertEquals(0, result.items.size)
     }
@@ -211,7 +211,7 @@ class CommentService: ApiTestContext() {
         whenever(commentMongoRepository.countByOrgNumber("246813579"))
             .thenReturn(0L)
 
-        val result = commentService.getCommentsByOrgNumberPaginated("246813579", 1, 10, "topicId", "desc")
+        val result = commentService.getCommentsByOrgNumberPaginated("246813579", 0, 10, "topicId", "desc")
 
         assertEquals(0, result.items.size)
     }
@@ -223,7 +223,7 @@ class CommentService: ApiTestContext() {
         whenever(commentMongoRepository.countByOrgNumber("246813579"))
             .thenReturn(0L)
 
-        val result = commentService.getCommentsByOrgNumberPaginated("246813579", 1, 10, "datetime", "ASC")
+        val result = commentService.getCommentsByOrgNumberPaginated("246813579", 0, 10, "datetime", "ASC")
 
         assertTrue(result.items.isEmpty())
     }
@@ -231,10 +231,10 @@ class CommentService: ApiTestContext() {
     @Test
     fun `Paginated - page 2 computes correct skip`() {
         val dbos = createTestDBOs(5)
-        whenever(commentMongoRepository.findPaginated(eq("246813579"), eq(5L), eq(5), eq("createdDate"), eq(Sort.Direction.DESC)))
+        whenever(commentMongoRepository.findPaginated(eq("246813579"), eq(10L), eq(5), eq("createdDate"), eq(Sort.Direction.DESC)))
             .thenReturn(dbos)
         whenever(commentMongoRepository.countByOrgNumber("246813579"))
-            .thenReturn(10L)
+            .thenReturn(15L)
 
         val result = commentService.getCommentsByOrgNumberPaginated("246813579", 2, 5, "datetime", "desc")
 

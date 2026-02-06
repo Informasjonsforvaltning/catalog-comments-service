@@ -26,7 +26,7 @@ class CommentService(
 ) {
 
     companion object {
-        const val MIN_PAGE = 1
+        const val MIN_PAGE = 0
         const val MAX_PAGE = 10000
         const val MIN_SIZE = 1
         const val MAX_SIZE = 100
@@ -89,7 +89,7 @@ class CommentService(
         val sortField = SORT_FIELD_WHITELIST[sortBy] ?: "createdDate"
         val sortDirection = if (sortOrder.equals("asc", ignoreCase = true)) Sort.Direction.ASC else Sort.Direction.DESC
 
-        val skip = (validatedPage - 1).toLong() * validatedSize
+        val skip = validatedPage.toLong() * validatedSize
         val items = commentMongoRepository.findPaginated(orgNumber, skip, validatedSize, sortField, sortDirection)
         val totalCount = commentMongoRepository.countByOrgNumber(orgNumber)
 

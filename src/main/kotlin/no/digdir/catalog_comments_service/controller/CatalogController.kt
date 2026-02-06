@@ -20,7 +20,7 @@ class CatalogController(private val commentService: CommentService) {
     fun getComments(
         @AuthenticationPrincipal jwt: Jwt,
         @PathVariable orgNumber: String,
-        @RequestParam(defaultValue = "1") page: Int,
+        @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "10") size: Int,
         @RequestParam(name = "sort_by", defaultValue = "datetime") sortBy: String,
         @RequestParam(name = "sort_order", defaultValue = "desc") sortOrder: String
