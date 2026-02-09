@@ -1,6 +1,7 @@
 package no.digdir.catalog_comments_service.controller
 
 import no.digdir.catalog_comments_service.model.Comment
+import no.digdir.catalog_comments_service.model.PaginatedResponse
 import no.digdir.catalog_comments_service.service.CommentService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -18,10 +19,14 @@ class CatalogController(private val commentService: CommentService) {
     @GetMapping
     fun getComments(
         @AuthenticationPrincipal jwt: Jwt,
-        @PathVariable orgNumber: String
-    ): ResponseEntity<List<Comment>> =
+        @PathVariable orgNumber: String,
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "10") size: Int,
+        @RequestParam(name = "sort_by", defaultValue = "datetime") sortBy: String,
+        @RequestParam(name = "sort_order", defaultValue = "desc") sortOrder: String
+    ): ResponseEntity<PaginatedResponse<Comment>> =
         ResponseEntity(
-            commentService.getCommentsByOrgNumber(orgNumber),
+            commentService.getCommentsByOrgNumberPaginated(orgNumber, page, size, sortBy, sortOrder),
             HttpStatus.OK
         )
 }
