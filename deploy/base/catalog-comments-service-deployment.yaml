@@ -20,22 +20,22 @@ spec:
       containers:
         - name: catalog-comments-service
           env:
-            - name: MONGODB_USER
+            - name: POSTGRESQL_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: HOST
+            - name: POSTGRESQL_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: PORT
+            - name: POSTGRESQL_DB
               valueFrom:
                 secretKeyRef:
                   name: catalog-comments-service
-                  key: MONGODB_USER
-            - name: MONGODB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: catalog-comments-service
-                  key: MONGODB_PASSWORD
-            - name: MONGODB_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: mongodb
-                  key: MONGODB_HOST
-            - name: MONGODB_REPLICASET
+                  key: POSTGRESQL_DB
+            - name: POSTGRESQL_USER
               valueFrom:
                 secretKeyRef:
                   name: mongodb
@@ -43,8 +43,8 @@ spec:
             - name: MONGODB_AUTH
               valueFrom:
                 secretKeyRef:
-                  name: mongodb
-                  key: MONGODB_AUTH
+                  name: catalog-comments-service
+                  key: POSTGRESQL_PASSWORD
             - name: OIDC_JWKS
               valueFrom:
                 secretKeyRef:

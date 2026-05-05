@@ -6,11 +6,10 @@ import no.digdir.catalog_comments_service.model.PaginatedResponse
 import no.digdir.catalog_comments_service.model.Pagination
 import no.digdir.catalog_comments_service.model.UserDBO
 import no.digdir.catalog_comments_service.repository.CommentDAO
-import no.digdir.catalog_comments_service.repository.CommentMongoRepository
+import no.digdir.catalog_comments_service.repository.CommentPaginationRepository
 import no.digdir.catalog_comments_service.repository.UserDAO
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Sort
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
@@ -22,7 +21,7 @@ private val logger = LoggerFactory.getLogger(CommentService::class.java)
 class CommentService(
     private val commentDAO: CommentDAO,
     private val userDAO: UserDAO,
-    private val commentMongoRepository: CommentMongoRepository
+    private val commentPaginationRepository: CommentPaginationRepository
 ) {
 
     companion object {
@@ -44,7 +43,7 @@ class CommentService(
         try {
             if (!userDAO.existsById(userId)) {
                 val userDocument = UserDBO(id = userId, name = name, email = email)
-                userDAO.insert(userDocument)
+                userDAO.save(userDocument)
             }
         } catch (ex: Exception) {
             logger.error("insert user failed", ex)
@@ -61,11 +60,11 @@ class CommentService(
         val newComment: CommentDBO = comment.mapForCreation(orgNumber, topicId, userId)
 
         return commentDAO
-            .insert(newComment ).toDTO(userDAO.findByIdOrNull(userId))
+            .save(newComment).toDTO(userDAO.findById(userId).orElse(null))
     }
 
     fun getCommentsByOrgNumber(orgNumber: String): List<Comment> = commentDAO.findCommentsByOrgNumber(orgNumber)
-        .map { it.toDTO(it.user?.let { userId -> userDAO.findByIdOrNull(userId) }) }
+        .map { it.toDTO(it.user?.let { userId -> userDAO.findById(userId).orElse(null) }) }
 
     fun getCommentsByOrgNumberPaginated(
         orgNumber: String,
@@ -90,10 +89,10 @@ class CommentService(
         val sortDirection = if (sortOrder.equals("asc", ignoreCase = true)) Sort.Direction.ASC else Sort.Direction.DESC
 
         val skip = validatedPage.toLong() * validatedSize
-        val items = commentMongoRepository.findPaginated(orgNumber, skip, validatedSize, sortField, sortDirection)
-        val totalCount = commentMongoRepository.countByOrgNumber(orgNumber)
+        val items = commentPaginationRepository.findPaginated(orgNumber, skip, validatedSize, sortField, sortDirection)
+        val totalCount = commentPaginationRepository.countByOrgNumber(orgNumber)
 
-        val dtos = items.map { it.toDTO(it.user?.let { userId -> userDAO.findByIdOrNull(userId) }) }
+        val dtos = items.map { it.toDTO(it.user?.let { userId -> userDAO.findById(userId).orElse(null) }) }
 
         val totalPages = if (totalCount == 0L) 0 else ceil(totalCount.toDouble() / validatedSize).toInt()
 
@@ -105,16 +104,16 @@ class CommentService(
 
     fun getCommentsByOrgNumberAndTopicId(orgNumber: String, topicId: String): List<Comment> =
         commentDAO.findCommentsByOrgNumberAndTopicId(orgNumber, topicId)
-            .map { it.toDTO(it.user?.let { userId -> userDAO.findByIdOrNull(userId) }) }
+            .map { it.toDTO(it.user?.let { userId -> userDAO.findById(userId).orElse(null) }) }
 
     fun getCommentDBO(id: String): CommentDBO? =
-        commentDAO.findByIdOrNull(id)
+        commentDAO.findById(id).orElse(null)
 
     fun updateComment(commentId: String, obj: Comment, userId: String): Comment? =
-        commentDAO.findByIdOrNull(commentId)
+        commentDAO.findById(commentId).orElse(null)
                 ?.copy(comment = obj.comment ?: "")
                 ?.updateLastChanged()
-                ?.let { commentDAO.save(it) }?.toDTO(userDAO.findByIdOrNull(userId))
+                ?.let { commentDAO.save(it) }?.toDTO(userDAO.findById(userId).orElse(null))
 
     fun deleteComment(comment: CommentDBO) =
         commentDAO.delete(comment)

@@ -1,8 +1,8 @@
 package no.digdir.catalog_comments_service.repository
 
-import org.springframework.data.mongodb.repository.MongoRepository
-import org.springframework.stereotype.Repository
 import no.digdir.catalog_comments_service.model.UserDBO
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.stereotype.Repository
 
 @Repository
-interface UserDAO:MongoRepository<UserDBO,String>
+interface UserDAO : JpaRepository<UserDBO, String>

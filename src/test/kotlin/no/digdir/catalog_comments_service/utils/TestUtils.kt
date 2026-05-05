@@ -1,14 +1,7 @@
 package no.digdir.catalog_comments_service.utils
 
-import com.mongodb.ConnectionString
-import com.mongodb.MongoClientSettings
-import com.mongodb.client.MongoClient
-import com.mongodb.client.MongoClients
-import no.digdir.catalog_comments_service.model.Comment
-import no.digdir.catalog_comments_service.model.UserDBO
-import no.digdir.catalog_comments_service.utils.ApiTestContext.Companion.mongoContainer
-import org.bson.codecs.configuration.CodecRegistries
-import org.bson.codecs.pojo.PojoCodecProvider
+import no.digdir.catalog_comments_service.utils.ApiTestContext.Companion.postgresContainer
+import org.flywaydb.core.Flyway
 import org.springframework.http.*
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.web.client.HttpClientErrorException
@@ -16,34 +9,37 @@ import org.springframework.web.client.RestTemplate
 import java.io.BufferedReader
 import java.net.HttpURLConnection
 import java.net.URL
+import java.sql.DriverManager
+import java.sql.Timestamp
 import java.time.LocalDateTime
 
 
-fun apiGet(port: Int, endpoint: String, acceptHeader: String?): Map<String,Any> {
+fun apiGet(port: Int, endpoint: String, acceptHeader: String?): Map<String, Any> {
 
     return try {
         val connection = URL("http://localhost:$port$endpoint").openConnection() as HttpURLConnection
-        if(acceptHeader != null) connection.setRequestProperty("Accept", acceptHeader)
+        if (acceptHeader != null) connection.setRequestProperty("Accept", acceptHeader)
         connection.connect()
 
-        if(isOK(connection.responseCode)) {
+        if (isOK(connection.responseCode)) {
             val responseBody = connection.inputStream.bufferedReader().use(BufferedReader::readText)
             mapOf(
-                "body"   to responseBody,
+                "body" to responseBody,
                 "header" to connection.headerFields,
-                "status" to connection.responseCode)
+                "status" to connection.responseCode
+            )
         } else {
             mapOf(
                 "status" to connection.responseCode,
                 "header" to " ",
-                "body"   to " "
+                "body" to " "
             )
         }
     } catch (e: Exception) {
         mapOf(
             "status" to e.toString(),
             "header" to " ",
-            "body"   to " "
+            "body" to " "
         )
     }
 }
@@ -92,48 +88,56 @@ fun authorizedRequest(
 }
 
 fun populate() {
-    val connectionString = ConnectionString("mongodb://$MONGO_USER:$MONGO_PASSWORD@localhost:${mongoContainer.getMappedPort(
-        MONGO_PORT
-    )}/$MONGO_DB_NAME?authSource=admin&authMechanism=SCRAM-SHA-1")
-    val pojoCodecRegistry = CodecRegistries.fromRegistries(
-        MongoClientSettings.getDefaultCodecRegistry(), CodecRegistries.fromProviders(
-            PojoCodecProvider.builder().automatic(true).build()))
+    Flyway.configure()
+        .dataSource(postgresContainer.getJdbcUrl(), DB_USER, DB_PASSWORD)
+        .cleanDisabled(false)
+        .load()
+        .also { it.clean(); it.migrate() }
 
-    val client: MongoClient = MongoClients.create(connectionString)
-    val mongoDatabase = client.getDatabase(MONGO_DB_NAME).withCodecRegistry(pojoCodecRegistry)
+    val conn = DriverManager.getConnection(postgresContainer.getJdbcUrl(), DB_USER, DB_PASSWORD)
 
-    val commentCollection = mongoDatabase.getCollection("comments")
-    commentCollection.deleteMany(org.bson.Document())
-    commentCollection.insertMany(commentDbPopulation())
-    commentCollection.insertMany(commentWrongUserDbPopulation())
+    conn.createStatement().execute("DELETE FROM comments")
+    conn.createStatement().execute("DELETE FROM users")
 
-    val userCollection = mongoDatabase.getCollection("users")
-    userCollection.deleteMany(org.bson.Document())
-    userCollection.insertMany(userDbPopulation())
+    val userStmt = conn.prepareStatement("INSERT INTO users (id, name, email) VALUES (?, ?, ?)")
+    for (user in listOf(USER_1, WRONG_USER)) {
+        userStmt.setString(1, user.id)
+        userStmt.setString(2, user.name)
+        userStmt.setString(3, user.email)
+        userStmt.addBatch()
+    }
+    userStmt.executeBatch()
+    userStmt.close()
 
-    client.close()
+    val commentStmt = conn.prepareStatement(
+        "INSERT INTO comments (id, created_date, last_changed_date, topic_id, org_number, user_id, comment) VALUES (?, ?, ?, ?, ?, ?, ?)"
+    )
+
+    val normalComments = listOf(COMMENT_0, COMMENT_1, COMMENT_2, COMMENT_WRONG_ORG, COMMENT_TO_BE_DELETED)
+    for (c in normalComments) {
+        commentStmt.setString(1, c.id)
+        commentStmt.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()))
+        commentStmt.setTimestamp(3, null)
+        commentStmt.setString(4, TOPIC_ID)
+        commentStmt.setString(5, ORG_NUMBER)
+        commentStmt.setString(6, "1924782563")
+        commentStmt.setString(7, c.comment)
+        commentStmt.addBatch()
+    }
+
+    val wrongUserComments = listOf(COMMENT_WRONG_USER)
+    for (c in wrongUserComments) {
+        commentStmt.setString(1, c.id)
+        commentStmt.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()))
+        commentStmt.setTimestamp(3, null)
+        commentStmt.setString(4, TOPIC_ID)
+        commentStmt.setString(5, ORG_NUMBER)
+        commentStmt.setString(6, "123")
+        commentStmt.setString(7, c.comment)
+        commentStmt.addBatch()
+    }
+
+    commentStmt.executeBatch()
+    commentStmt.close()
+    conn.close()
 }
-
-private fun Comment.mapBDO(userId: String): org.bson.Document =
-    org.bson.Document()
-        .append("_id", id)
-        .append("createdDate", LocalDateTime.now())
-        .append("topicId", TOPIC_ID)
-        .append("orgNumber", ORG_NUMBER)
-        .append("user", userId)
-        .append("comment", comment)
-
-fun commentDbPopulation() = listOf(COMMENT_0, COMMENT_1, COMMENT_2, COMMENT_WRONG_ORG, COMMENT_TO_BE_DELETED)
-    .map { it.mapBDO("1924782563") }
-
-fun commentWrongUserDbPopulation() = listOf(COMMENT_WRONG_USER)
-    .map { it.mapBDO("123") }
-
-fun userDbPopulation() = listOf(USER_1, WRONG_USER)
-    .map { it.mapBDO() }
-
-private fun UserDBO.mapBDO(): org.bson.Document =
-    org.bson.Document()
-        .append("_id", id)
-        .append("name", name)
-        .append("email", email)
