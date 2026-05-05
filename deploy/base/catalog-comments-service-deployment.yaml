@@ -38,9 +38,9 @@ spec:
             - name: POSTGRESQL_USER
               valueFrom:
                 secretKeyRef:
-                  name: mongodb
-                  key: MONGODB_REPLICASET
-            - name: MONGODB_AUTH
+                  name: catalog-comments-service
+                  key: POSTGRESQL_USER
+            - name: POSTGRESQL_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: catalog-comments-service
