@@ -160,7 +160,7 @@ class CommentIntegration : ApiTestContext() {
     @Test
     fun `Ok - Updated - for read access`() {
         val rsp = authorizedRequest(
-            "/$ORG_NUMBER/$TOPIC_ID/comment/${COMMENT_0.id}", port, mapper.writeValueAsString(COMMENT_TO_BE_UPDATED),
+            "/$ORG_NUMBER/$TOPIC_ID/comment/${COMMENT_0.id}", port, mapper.writeValueAsString(COMMENT_TO_BE_UPDATED_WITH_ID),
             JwtToken(Access.ORG_READ).toString(), HttpMethod.PUT
         )
         assertEquals(HttpStatus.OK.value(), rsp["status"])
@@ -172,7 +172,7 @@ class CommentIntegration : ApiTestContext() {
     @Test
     fun `Ok - Updated - for write access`() {
         val rsp = authorizedRequest(
-            "/$ORG_NUMBER/$TOPIC_ID/comment/${COMMENT_1.id}", port, mapper.writeValueAsString(COMMENT_TO_BE_UPDATED),
+            "/$ORG_NUMBER/$TOPIC_ID/comment/${COMMENT_1.id}", port, mapper.writeValueAsString(COMMENT_TO_BE_UPDATED_WITH_ID),
             JwtToken(Access.ORG_WRITE).toString(), HttpMethod.PUT
         )
 
@@ -180,6 +180,16 @@ class CommentIntegration : ApiTestContext() {
 
         val updatedComment: Comment = mapper.readValue(rsp["body"] as String)
         assertEquals(updatedComment.comment, COMMENT_TO_BE_UPDATED.comment)
+    }
+
+    @Test
+    fun `Update returns bad request when id is missing in body`() {
+        val rsp = authorizedRequest(
+            "/$ORG_NUMBER/$TOPIC_ID/comment/${COMMENT_0.id}", port, mapper.writeValueAsString(COMMENT_TO_BE_UPDATED),
+            JwtToken(Access.ORG_READ).toString(), HttpMethod.PUT
+        )
+
+        assertEquals(HttpStatus.BAD_REQUEST.value(), rsp["status"])
     }
 
     @Test

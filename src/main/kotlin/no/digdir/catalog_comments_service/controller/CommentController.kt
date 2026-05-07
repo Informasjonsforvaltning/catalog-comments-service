@@ -78,6 +78,7 @@ class CommentController (private val commentService: CommentService) {
             commentDBO == null -> ResponseEntity(HttpStatus.NOT_FOUND)
             userId == null -> ResponseEntity(HttpStatus.UNAUTHORIZED)
             userId != commentDBO.user -> ResponseEntity(HttpStatus.FORBIDDEN)
+            comment.id.isNullOrBlank() -> ResponseEntity(HttpStatus.BAD_REQUEST)
             comment.comment == null -> ResponseEntity(HttpStatus.BAD_REQUEST)
             else -> {
                 logger.info("updating comment for ${commentId}")

@@ -52,6 +52,11 @@ val COMMENT_TO_BE_UPDATED = Comment(
     comment = "Oppdatert kommentar"
 )
 
+val COMMENT_TO_BE_UPDATED_WITH_ID = Comment(
+    id = "comment-update-request-id",
+    comment = "Oppdatert kommentar"
+)
+
 val COMMENT_TO_BE_DELETED = Comment(
     id = "comment-to-be-deleted",
     comment = "Slett kommentaren 1"
