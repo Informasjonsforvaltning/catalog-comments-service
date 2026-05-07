@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 data class CommentDBO(
     @Id
     @Column(name = "id")
-    val id: String = "",
+    val id: String,
 
     @Column(name = "created_date", nullable = false)
     val createdDate: LocalDateTime = LocalDateTime.now(),
