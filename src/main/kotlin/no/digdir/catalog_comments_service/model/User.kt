@@ -8,7 +8,7 @@ import jakarta.persistence.*
 data class UserDBO(
     @Id
     @Column(name = "id")
-    val id: String = "",
+    val id: String,
 
     @Column(name = "name")
     val name: String? = null,
