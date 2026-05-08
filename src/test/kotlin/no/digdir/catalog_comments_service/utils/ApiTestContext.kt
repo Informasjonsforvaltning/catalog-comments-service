@@ -5,8 +5,7 @@ import org.springframework.boot.test.util.TestPropertyValues
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.context.ApplicationContextInitializer
 import org.springframework.context.ConfigurableApplicationContext
-import org.testcontainers.containers.GenericContainer
-import org.testcontainers.containers.wait.strategy.Wait
+import org.testcontainers.containers.PostgreSQLContainer
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
@@ -19,7 +18,9 @@ abstract class ApiTestContext {
     internal class Initializer : ApplicationContextInitializer<ConfigurableApplicationContext> {
         override fun initialize(configurableApplicationContext: ConfigurableApplicationContext) {
             TestPropertyValues.of(
-                "spring.mongodb.port=${mongoContainer.getMappedPort(MONGO_PORT)}"
+                "spring.datasource.url=${postgresContainer.getJdbcUrl()}",
+                "spring.datasource.username=${DB_USER}",
+                "spring.datasource.password=${DB_PASSWORD}",
             ).applyTo(configurableApplicationContext.environment)
         }
     }
@@ -27,18 +28,18 @@ abstract class ApiTestContext {
     companion object {
 
         private val logger = LoggerFactory.getLogger(ApiTestContext::class.java)
-        var mongoContainer: KGenericContainer
+        var postgresContainer: KPostgreSQLContainer
 
         init {
 
             startMockServer()
 
-            mongoContainer = KGenericContainer("mongo:latest")
-                .withEnv(MONGO_ENV_VALUES)
-                .withExposedPorts(MONGO_PORT)
-                .waitingFor(Wait.forListeningPort())
+            postgresContainer = KPostgreSQLContainer("postgres:16")
+                .withDatabaseName(DB_NAME)
+                .withUsername(DB_USER)
+                .withPassword(DB_PASSWORD)
 
-            mongoContainer.start()
+            postgresContainer.start()
 
             populate()
 
@@ -60,5 +61,4 @@ abstract class ApiTestContext {
 
 }
 
-// Hack needed because testcontainers use of generics confuses Kotlin
-class KGenericContainer(imageName: String) : GenericContainer<KGenericContainer>(imageName)
+class KPostgreSQLContainer(imageName: String) : PostgreSQLContainer<KPostgreSQLContainer>(imageName)

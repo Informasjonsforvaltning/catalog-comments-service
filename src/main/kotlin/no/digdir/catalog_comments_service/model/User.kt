@@ -1,21 +1,26 @@
 package no.digdir.catalog_comments_service.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import org.springframework.data.annotation.Id
-import org.springframework.data.mongodb.core.mapping.Document
-import java.util.*
+import jakarta.persistence.*
 
-@Document(collection = "users")
+@Entity
+@Table(name = "users")
 data class UserDBO(
-    @Id val id:String,
-    val name:String?,
-    val email:String?
-    )
+    @Id
+    @Column(name = "id")
+    val id: String,
+
+    @Column(name = "name")
+    val name: String? = null,
+
+    @Column(name = "email")
+    val email: String? = null,
+)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class User (
+data class User(
     val id: String? = null,
-    val userName:String? = null,
+    val userName: String? = null,
     val name: String? = null,
-    val email: String? = null
-    )
+    val email: String? = null,
+)

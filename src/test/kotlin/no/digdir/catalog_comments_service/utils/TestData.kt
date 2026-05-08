@@ -2,17 +2,10 @@ package no.digdir.catalog_comments_service.utils
 
 import no.digdir.catalog_comments_service.model.Comment
 import no.digdir.catalog_comments_service.model.UserDBO
-import org.testcontainers.shaded.com.google.common.collect.ImmutableMap
 
-const val MONGO_USER = "testuser"
-const val MONGO_PASSWORD = "testpassword"
-const val MONGO_PORT = 27017
-const val MONGO_DB_NAME = "catalogComments"
-
-val MONGO_ENV_VALUES: Map<String, String> = ImmutableMap.of(
-    "MONGO_INITDB_ROOT_USERNAME", MONGO_USER,
-    "MONGO_INITDB_ROOT_PASSWORD", MONGO_PASSWORD
-)
+const val DB_USER = "testuser"
+const val DB_PASSWORD = "testpassword"
+const val DB_NAME = "catalog_comments"
 
 val ORG_NUMBER = "246813579"
 
@@ -56,6 +49,11 @@ val COMMENT_TO_BE_CREATED_1 = Comment(
 )
 
 val COMMENT_TO_BE_UPDATED = Comment(
+    comment = "Oppdatert kommentar"
+)
+
+val COMMENT_TO_BE_UPDATED_WITH_ID = Comment(
+    id = "comment-update-request-id",
     comment = "Oppdatert kommentar"
 )
 

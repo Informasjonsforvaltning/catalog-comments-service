@@ -8,38 +8,31 @@ server:
   port: 8080
 application.cors.originPatterns: "${CORS_ORIGIN_PATTERNS}"
 spring:
-  data.mongodb:
-    auto-index-creation: true
+  datasource:
+    url: jdbc:postgresql://${POSTGRESQL_HOST}:5432/${POSTGRESQL_DB:catalog_comments}
+    username: ${POSTGRESQL_USER}
+    password: ${POSTGRESQL_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
   security.oauth2.resourceserver.jwt:
     jwk-set-uri: ${OIDC_JWKS:https://auth.staging.fellesdatakatalog.digdir.no/realms/fdk/protocol/openid-connect/certs}
     issuer-uri: ${OIDC_ISSUER:https://auth.staging.fellesdatakatalog.digdir.no/realms/fdk}
-  mongodb:
-    host: ${MONGODB_HOST}
-    username: ${MONGODB_USER}
-    password: ${MONGODB_PASSWORD}
-    authentication-database: ${MONGODB_AUTH}
-    replica-set-name: ${MONGODB_REPLICASET}
-    port: 27017
-    database: catalogComments
 ---
 spring:
   config.activate.on-profile: develop
   security.oauth2.resourceserver.jwt.jwk-set-uri: https://auth.staging.fellesdatakatalog.digdir.no/realms/fdk/protocol/openid-connect/certs
-  mongodb:
-    host: localhost
+  datasource:
+    url: jdbc:postgresql://localhost:5432/catalog_comments
     username: admin
     password: admin
-    authentication-database: admin
-    replica-set-name: null
 application.cors.originPatterns: "*"
 ---
 spring:
   config.activate.on-profile: integration-test
   security.oauth2.resourceserver.jwt.jwk-set-uri: http://localhost:5050/auth/realms/fdk/protocol/openid-connect/certs
-  mongodb:
-    username: testuser
-    password: testpassword
-    host: localhost
-    authentication-database: admin
-    replica-set-name: null
 application.cors.originPatterns: "*"

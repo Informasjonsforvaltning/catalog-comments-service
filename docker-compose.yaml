@@ -1,10 +1,11 @@
 version: "3"
 
 services:
-  mongodb:
-    image: mongo:latest
+  postgres:
+    image: postgres:16
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=admin
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=catalog_comments
     ports:
-      - "27017:27017"
+      - "5433:5432"

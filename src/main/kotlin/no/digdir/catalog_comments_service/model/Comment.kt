@@ -1,36 +1,42 @@
 package no.digdir.catalog_comments_service.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
-import org.springframework.data.annotation.Id
-import org.springframework.data.mongodb.core.mapping.Document
+import jakarta.persistence.*
 import java.time.LocalDateTime
-import java.util.*
 
-@Document(collection = "comments")
+@Entity
+@Table(name = "comments")
 data class CommentDBO(
     @Id
-    val id:String,
-    @JsonSerialize(using = LocalDateTimeSerializer::class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer::class)
-    val createdDate: LocalDateTime,
+    @Column(name = "id")
+    val id: String,
+
+    @Column(name = "created_date", nullable = false)
+    val createdDate: LocalDateTime = LocalDateTime.now(),
+
+    @Column(name = "last_changed_date")
     val lastChangedDate: LocalDateTime? = null,
-    val topicId:String?,
-    val orgNumber:String?,
-    var user:String?,
-    val comment:String?
+
+    @Column(name = "topic_id")
+    val topicId: String? = null,
+
+    @Column(name = "org_number")
+    val orgNumber: String? = null,
+
+    @Column(name = "user_id")
+    var user: String? = null,
+
+    @Column(name = "comment", columnDefinition = "text")
+    val comment: String? = null,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Comment(
-    val id:String? = null,
+    val id: String? = null,
     val createdDate: LocalDateTime? = null,
     val lastChangedDate: LocalDateTime? = null,
-    val topicId:String? = null,
-    val orgNumber:String? = null,
-    var user:UserDBO? = null,
-    val comment:String? = null
+    val topicId: String? = null,
+    val orgNumber: String? = null,
+    var user: UserDBO? = null,
+    val comment: String? = null,
 )
