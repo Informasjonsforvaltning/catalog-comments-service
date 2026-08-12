@@ -29,3 +29,5 @@ target/
 # IDEA
 *.iml
 .idea/
+
+.DS_Store
