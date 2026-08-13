@@ -1,12 +1,5 @@
 package no.digdir.catalogcomments.model
 
-data class Pagination(
-    val totalPages: Int,
-    val page: Int,
-    val size: Int,
-)
+data class Pagination(val totalPages: Int, val page: Int, val size: Int)
 
-data class PaginatedResponse<T>(
-    val items: List<T>,
-    val pagination: Pagination,
-)
+data class PaginatedResponse<T>(val items: List<T>, val pagination: Pagination)

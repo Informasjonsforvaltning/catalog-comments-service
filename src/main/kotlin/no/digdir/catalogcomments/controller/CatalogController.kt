@@ -18,9 +18,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @CrossOrigin
 @RequestMapping("/{orgNumber}")
-class CatalogController(
-    private val commentService: CommentService,
-) {
+class CatalogController(private val commentService: CommentService) {
     @PreAuthorize("@authorizer.hasOrgReadPermission(#jwt, #orgNumber)")
     @GetMapping
     fun getComments(
@@ -30,9 +28,8 @@ class CatalogController(
         @RequestParam(defaultValue = "10") size: Int,
         @RequestParam(name = "sort_by", defaultValue = "datetime") sortBy: String,
         @RequestParam(name = "sort_order", defaultValue = "desc") sortOrder: String,
-    ): ResponseEntity<PaginatedResponse<Comment>> =
-        ResponseEntity(
-            commentService.getCommentsByOrgNumberPaginated(orgNumber, page, size, sortBy, sortOrder),
-            HttpStatus.OK,
-        )
+    ): ResponseEntity<PaginatedResponse<Comment>> = ResponseEntity(
+        commentService.getCommentsByOrgNumberPaginated(orgNumber, page, size, sortBy, sortOrder),
+        HttpStatus.OK,
+    )
 }

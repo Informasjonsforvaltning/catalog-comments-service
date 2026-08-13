@@ -25,9 +25,7 @@ private val logger = LoggerFactory.getLogger(CommentController::class.java)
 @RestController
 @CrossOrigin
 @RequestMapping("/{orgNumber}/{topicId}/comment")
-class CommentController(
-    private val commentService: CommentService,
-) {
+class CommentController(private val commentService: CommentService) {
     private fun getUserIdFromJWT(jwt: Jwt): String? = jwt.claims["user_name"] as? String
 
     private fun getUserNameFromJWT(jwt: Jwt): String? = jwt.claims["name"] as? String
@@ -64,11 +62,10 @@ class CommentController(
         @AuthenticationPrincipal jwt: Jwt,
         @PathVariable orgNumber: String,
         @PathVariable topicId: String,
-    ): ResponseEntity<List<Comment>> =
-        ResponseEntity<List<Comment>>(
-            commentService.getCommentsByOrgNumberAndTopicId(orgNumber, topicId),
-            HttpStatus.OK,
-        )
+    ): ResponseEntity<List<Comment>> = ResponseEntity<List<Comment>>(
+        commentService.getCommentsByOrgNumberAndTopicId(orgNumber, topicId),
+        HttpStatus.OK,
+    )
 
     @PreAuthorize("@authorizer.hasOrgReadPermission(#jwt, #orgNumber)")
     @PutMapping(
@@ -146,8 +143,7 @@ class CommentController(
     }
 }
 
-private fun locationHeaderForCreated(comment: Comment): HttpHeaders =
-    HttpHeaders().apply {
-        add(HttpHeaders.LOCATION, "/comment/${comment.id}")
-        add(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.LOCATION)
-    }
+private fun locationHeaderForCreated(comment: Comment): HttpHeaders = HttpHeaders().apply {
+    add(HttpHeaders.LOCATION, "/comment/${comment.id}")
+    add(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.LOCATION)
+}

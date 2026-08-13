@@ -6,21 +6,16 @@ import no.digdir.catalogcomments.model.UserDBO
 import java.time.LocalDateTime
 import java.util.UUID
 
-fun CommentDBO.toDTO(userDBO: UserDBO?): Comment =
-    Comment(
-        id = id,
-        createdDate = createdDate,
-        topicId = topicId,
-        orgNumber = orgNumber,
-        user = userDBO,
-        comment = comment,
-    )
+fun CommentDBO.toDTO(userDBO: UserDBO?): Comment = Comment(
+    id = id,
+    createdDate = createdDate,
+    topicId = topicId,
+    orgNumber = orgNumber,
+    user = userDBO,
+    comment = comment,
+)
 
-fun Comment.toDBO(
-    orgNr: String,
-    id: String,
-    userId: String?,
-): CommentDBO {
+fun Comment.toDBO(orgNr: String, id: String, userId: String?): CommentDBO {
     val newCreatedDate = LocalDateTime.now()
 
     return CommentDBO(
@@ -33,11 +28,7 @@ fun Comment.toDBO(
     )
 }
 
-fun Comment.mapForCreation(
-    orgNumber: String,
-    topicId: String,
-    user: String,
-): CommentDBO {
+fun Comment.mapForCreation(orgNumber: String, topicId: String, user: String): CommentDBO {
     val newId = UUID.randomUUID().toString()
     val newCreatedDate = LocalDateTime.now()
 
@@ -51,7 +42,6 @@ fun Comment.mapForCreation(
     )
 }
 
-fun CommentDBO.updateLastChanged(): CommentDBO =
-    copy(
-        lastChangedDate = LocalDateTime.now(),
-    )
+fun CommentDBO.updateLastChanged(): CommentDBO = copy(
+    lastChangedDate = LocalDateTime.now(),
+)
