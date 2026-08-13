@@ -6,16 +6,8 @@ import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Repository
 
 @Repository
-class CommentPaginationRepository(
-    private val entityManager: EntityManager,
-) {
-    fun findPaginated(
-        orgNumber: String,
-        skip: Long,
-        limit: Int,
-        sortField: String,
-        sortDirection: Sort.Direction,
-    ): List<CommentDBO> {
+class CommentPaginationRepository(private val entityManager: EntityManager) {
+    fun findPaginated(orgNumber: String, skip: Long, limit: Int, sortField: String, sortDirection: Sort.Direction): List<CommentDBO> {
         val direction = if (sortDirection == Sort.Direction.ASC) "ASC" else "DESC"
         val query =
             entityManager.createQuery(

@@ -244,15 +244,14 @@ class CommentService : ApiTestContext() {
         assertEquals(2, result.pagination.page)
     }
 
-    private fun createTestDBOs(count: Int): List<CommentDBO> =
-        (1..count).map { i ->
-            CommentDBO(
-                id = "id$i",
-                createdDate = LocalDateTime.now(),
-                topicId = "topicId0",
-                orgNumber = "246813579",
-                user = null,
-                comment = "Comment $i",
-            )
-        }
+    private fun createTestDBOs(count: Int): List<CommentDBO> = (1..count).map { i ->
+        CommentDBO(
+            id = "id$i",
+            createdDate = LocalDateTime.now(),
+            topicId = "topicId0",
+            orgNumber = "246813579",
+            user = null,
+            comment = "Comment $i",
+        )
+    }
 }

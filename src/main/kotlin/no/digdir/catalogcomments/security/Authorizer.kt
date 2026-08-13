@@ -13,10 +13,7 @@ private fun roleOrgRead(orgnr: String) = "organization:$orgnr:read"
 
 @Component("authorizer")
 class Authorizer {
-    fun hasOrgReadPermission(
-        jwt: Jwt,
-        orgnr: String?,
-    ): Boolean {
+    fun hasOrgReadPermission(jwt: Jwt, orgnr: String?): Boolean {
         val authorities: String? = jwt.claims["authorities"] as? String
         return when {
             orgnr == null -> false

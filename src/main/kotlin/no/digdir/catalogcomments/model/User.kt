@@ -19,9 +19,4 @@ data class UserDBO(
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class User(
-    val id: String? = null,
-    val userName: String? = null,
-    val name: String? = null,
-    val email: String? = null,
-)
+data class User(val id: String? = null, val userName: String? = null, val name: String? = null, val email: String? = null)

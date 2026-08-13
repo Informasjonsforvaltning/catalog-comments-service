@@ -39,11 +39,7 @@ class CommentService(
             )
     }
 
-    private fun createUserIfNotExists(
-        userId: String,
-        name: String? = null,
-        email: String? = null,
-    ) {
+    private fun createUserIfNotExists(userId: String, name: String? = null, email: String? = null) {
         try {
             if (!userDAO.existsById(userId)) {
                 val userDocument = UserDBO(id = userId, name = name, email = email)
@@ -74,10 +70,9 @@ class CommentService(
             .toDTO(userDAO.findById(userId).orElse(null))
     }
 
-    fun getCommentsByOrgNumber(orgNumber: String): List<Comment> =
-        commentDAO
-            .findCommentsByOrgNumber(orgNumber)
-            .map { it.toDTO(it.user?.let { userId -> userDAO.findById(userId).orElse(null) }) }
+    fun getCommentsByOrgNumber(orgNumber: String): List<Comment> = commentDAO
+        .findCommentsByOrgNumber(orgNumber)
+        .map { it.toDTO(it.user?.let { userId -> userDAO.findById(userId).orElse(null) }) }
 
     fun getCommentsByOrgNumberPaginated(
         orgNumber: String,
@@ -117,28 +112,19 @@ class CommentService(
         )
     }
 
-    fun getCommentsByOrgNumberAndTopicId(
-        orgNumber: String,
-        topicId: String,
-    ): List<Comment> =
-        commentDAO
-            .findCommentsByOrgNumberAndTopicId(orgNumber, topicId)
-            .map { it.toDTO(it.user?.let { userId -> userDAO.findById(userId).orElse(null) }) }
+    fun getCommentsByOrgNumberAndTopicId(orgNumber: String, topicId: String): List<Comment> = commentDAO
+        .findCommentsByOrgNumberAndTopicId(orgNumber, topicId)
+        .map { it.toDTO(it.user?.let { userId -> userDAO.findById(userId).orElse(null) }) }
 
     fun getCommentDBO(id: String): CommentDBO? = commentDAO.findById(id).orElse(null)
 
-    fun updateComment(
-        commentId: String,
-        obj: Comment,
-        userId: String,
-    ): Comment? =
-        commentDAO
-            .findById(commentId)
-            .orElse(null)
-            ?.copy(comment = obj.comment ?: "")
-            ?.updateLastChanged()
-            ?.let { commentDAO.save(it) }
-            ?.toDTO(userDAO.findById(userId).orElse(null))
+    fun updateComment(commentId: String, obj: Comment, userId: String): Comment? = commentDAO
+        .findById(commentId)
+        .orElse(null)
+        ?.copy(comment = obj.comment ?: "")
+        ?.updateLastChanged()
+        ?.let { commentDAO.save(it) }
+        ?.toDTO(userDAO.findById(userId).orElse(null))
 
     fun deleteComment(comment: CommentDBO) = commentDAO.delete(comment)
 }
