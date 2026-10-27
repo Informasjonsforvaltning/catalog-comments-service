@@ -6,6 +6,9 @@ logging:
   level.org.apache.jena: ERROR
 server:
   port: 8080
+  compression:
+    enabled: true
+    min-response-size: 1024
 application.cors.originPatterns: "${CORS_ORIGIN_PATTERNS}"
 spring:
   datasource:
